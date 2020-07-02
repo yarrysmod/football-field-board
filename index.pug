@@ -21,7 +21,10 @@ html
                 .spots-layer
 
         .config-panel
-            h1 Route Planner
+            h1 Play Planner
+            .edit-area
+                .edit-row.play-title-container
+                    input(id='playName' type='text' placeholder='Name of Play')
             .description.no-selection Select a position to assign a role and route.
             .edit-area.selection
                 .edit-row
@@ -34,6 +37,12 @@ html
                         select(id='spotRoute')
                             option(value='') No Route
                 .edit-row
-                    button(id='spotReset') Zurücksetzen
+                    button.full-width.reset(id='spotReset') Reset Spot
+            h2 Manage Play
+            .edit-area
+                .edit-row
+                    button.half-width.reset(id='playReset') Reset Play
+                    button.half-width.save(id='playSave') Save Play
+            h2 Previous Plays
 
         script(src='script.js')

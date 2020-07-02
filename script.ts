@@ -3,6 +3,7 @@ const SPOT_SET_CLASS = 'set';
 
 class FieldSpot {
   private domElement: HTMLDivElement;
+  private spotRoute: SpotRoute; // TODO
 
   set isSelected(value: boolean) {
     this.domElement.classList.toggle(SPOT_SELECTED_CLASS, value);
@@ -42,13 +43,61 @@ class FieldSpot {
       parent.dispatchEvent(event);
     });
   }
+
+  deselect() {
+    this.domElement.dispatchEvent(new Event('click'));
+  }
+
+  reset() {
+    this.position = '';
+    this.route = '';
+  }
 }
 
-class FieldGenerator {
-  spotsField: Element;
-  spots: Array<FieldSpot> = [];
+type StoredSpots = {
+  [key: number]: {
+    position: string;
+    route: string;
+  }
+};
+
+interface StoredPlayData {
+  playName: string;
+  createdAt: number;
+  updatedAt?: number;
+  spots: StoredSpots;
+}
+
+class SpotRoute extends HTMLCanvasElement { // TODO
+  private canvasContext: CanvasRenderingContext2D;
+
+  constructor() {
+    super();
+
+    this.canvasContext = this.getContext('2d');
+  }
+
+  drawRoute() {
+  }
+
+  removeRoute() {
+  }
+}
+
+class PlayGenerator {
+  private playField: Element;
+  private playNameInput: HTMLInputElement;
+
+  private spots: Array<FieldSpot> = [];
   private spotConfigurator: SpotConfigurator;
   private _selectedSpot: FieldSpot;
+  private buttons: {
+    savePlay: HTMLButtonElement;
+    resetPlay: HTMLButtonElement;
+  };
+
+  private playStoreManager = new PlayStorageManager();
+  public playIdentifier: string;
 
   get selectedSpot() {
     return this._selectedSpot;
@@ -75,42 +124,68 @@ class FieldGenerator {
     }
   }
 
-  constructor(spotsCount: number) {
-    this.spotsField = document.querySelector('.spots-layer');
+  set playName(newPlayName) {
+    this.playNameInput.value = newPlayName || '';
+  }
+
+  get playName() {
+    return this.playNameInput.value;
+  }
+
+  constructor(
+      spotsCount: number
+  ) {
+    this.playField = document.querySelector('.spots-layer');
+    this.playNameInput = document.querySelector('input#playName');
+    this.buttons = {
+      resetPlay: document.querySelector('button#playReset'),
+      savePlay: document.querySelector('button#playSave'),
+    };
     this.spotConfigurator = new SpotConfigurator();
 
     const {
       width: fieldWidth,
       height: fieldHeight,
-    } = this.spotsField.getBoundingClientRect();
+    } = this.playField.getBoundingClientRect();
 
     const spotLength = fieldWidth / spotsCount;
     const rowCount = Math.floor(fieldHeight / spotLength);
+    const widthPercentage = 100 / spotsCount;
+    const heightPercentage = 100 / rowCount;
 
-    const spotWidthPercentage = 100 / spotsCount;
-    const spotHeightPercentage = 100 / rowCount;
+    this.defineSpotStyle(widthPercentage, heightPercentage);
+    this.populateSpots(rowCount, spotsCount, {widthPercentage, heightPercentage})
 
-    this.defineSpotStyle(spotWidthPercentage, spotHeightPercentage);
+    this.playField.addEventListener(
+        'spotSelected',
+        (customEvent: CustomEvent<FieldSpot>) => this.processSpotSelection(customEvent)
+    );
+    this.buttons.resetPlay.addEventListener('click', () => this.reloadPlay());
+    this.buttons.savePlay.addEventListener('click', () => this.savePlay());
+  }
 
+  public populateSpots(
+      rowCount: number,
+      spotsCount: number,
+      spotDimensions: {
+        widthPercentage: number;
+        heightPercentage: number;
+      }
+  ) {
     for (let rowNum = 0; rowNum < rowCount; rowNum += 1) {
       for (let spotNum = 0; spotNum < spotsCount; spotNum += 1) {
         this.spots.push(
             new FieldSpot(
-                spotWidthPercentage,
-                spotHeightPercentage,
-                this.spotsField
+                spotDimensions.widthPercentage,
+                spotDimensions.heightPercentage,
+                this.playField
             )
         );
       }
     }
-
-    this.spotsField.addEventListener(
-        'spotSelected',
-        (customEvent: CustomEvent<FieldSpot>) => this.processSpotSelection(customEvent)
-    );
   }
 
-  defineSpotStyle(spotWidthPercentage: number, spotHeightPercentage: number) {
+  public defineSpotStyle(spotWidthPercentage: number, spotHeightPercentage: number) {
     let spotStyle = document.createElement('style');
 
     spotStyle.appendChild(new Text(`.spot {
@@ -124,6 +199,93 @@ class FieldGenerator {
   private processSpotSelection({detail: fieldSpot}: CustomEvent<FieldSpot>) {
     this.selectedSpot = fieldSpot;
     this.spotConfigurator.processSelectedSpot(this.selectedSpot);
+  }
+
+  public reloadPlay(playConfiguration?: StoredPlayData, playIdentifier?: string): void {
+    if (this.selectedSpot !== undefined) {
+      this.selectedSpot.deselect();
+    }
+
+    const configuredSpots = playConfiguration?.spots || {};
+
+    this.playIdentifier = playIdentifier;
+    this.playName = playIdentifier;
+
+    for (const spot of this.spots) {
+      spot.reset();
+    }
+
+    for (const spotEntry of Object.entries(configuredSpots)) {
+      const spotIndex = Number(spotEntry[0]);
+      const spotConfiguration = spotEntry[1];
+      const selectedSpot = this.spots[spotIndex];
+
+      selectedSpot.position = spotConfiguration.position;
+      selectedSpot.route = spotConfiguration.route;
+    }
+  }
+
+  public savePlay() {
+    const playName = this.playName;
+
+    if (!playName) {
+      return window.alert('Please define a play name before saving.');
+    }
+
+    const spots = this.spots
+        .reduce((storedSpots, {route, position}, index): StoredSpots => {
+          if (position) {
+            storedSpots[index] = {route, position}
+          }
+
+          return storedSpots;
+        }, {} as StoredSpots);
+
+    if (!Object.keys(spots).length) {
+      return window.alert(`Please define positions before saving.`);
+    }
+
+    const currentTimestamp = Date.now();
+
+    if (!this.playIdentifier) {
+      this.playIdentifier = `${playName}+${currentTimestamp}`;
+    }
+
+    this.playStoreManager.updatePlayData(
+        this.playIdentifier,
+        this.playName,
+        spots,
+        currentTimestamp
+    );
+
+  }
+}
+
+class PlayStorageManager {
+  updatePlayData(
+      playIdentifier: string,
+      playName: string,
+      spots: StoredSpots,
+      currentTimestamp: number
+  ) {
+    let previousPlayData = localStorage.getItem(playIdentifier);
+    let playData: StoredPlayData;
+
+    if (!previousPlayData) {
+      playData = {
+        spots,
+        playName,
+        createdAt: currentTimestamp,
+      };
+    } else {
+      playData = Object.assign({
+        spots,
+        playName,
+        updatedAt: currentTimestamp,
+      }, JSON.parse(previousPlayData));
+    }
+
+    localStorage.setItem(playIdentifier, JSON.stringify(playData));
   }
 }
 
@@ -210,11 +372,8 @@ class SpotConfigurator {
     });
 
     this.resetButton.addEventListener('click', () => {
-      this.inputs.position.value = '';
-      this.inputs.position.dispatchEvent(new Event('input'));
-
-      this.inputs.route.value = '';
-      this.inputs.position.dispatchEvent(new Event('change'));
+      this.selectedSpot.reset();
+      this.selectedSpot.deselect();
     });
   }
 
@@ -272,4 +431,4 @@ class SpotConfigurator {
 }
 
 
-new FieldGenerator(11);
+new PlayGenerator(11);

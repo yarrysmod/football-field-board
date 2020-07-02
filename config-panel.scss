@@ -1,9 +1,18 @@
 @import "style";
 
+$resetColor: $opposingEndzoneColor;
+$saveColor: $fieldGrass;
+
 .config-panel {
   position: fixed;
   top: 0;
-  left: $fieldWidth + (2 * $fieldPadding) + 60px;
+  left: $fieldWidth + (2 * $fieldPadding);
+  padding: $fieldPadding;
+  min-width: $fieldWidth + $fieldPadding;
+
+  h1 {
+    margin-top: 0;
+  }
 
   &.has-selection {
     .no-selection {
@@ -36,12 +45,42 @@
     }
 
     button {
+      border: none;
+      padding: 5px;
+      font-weight: bold;
+      color: $fieldBorder;
       display: block;
-      width: 100%;
+      float: left;
+
+      &.full-width {
+        width: 100%;
+      }
+
+      &.half-width {
+        width: 50%;
+      }
+
+      &.save {
+        background: $saveColor;
+      }
+
+      &.reset {
+        background: $resetColor;
+      }
     }
   }
 
   .selection {
     display: none;
+  }
+
+  .play-title-container {
+    input {
+      font-size: 1.5rem;
+      font-weight: bold;
+      font-style: italic;
+      margin-bottom: 20px;
+      width: 100%;
+    }
   }
 }
