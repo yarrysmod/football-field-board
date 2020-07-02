@@ -1,6 +1,7 @@
 doctype html
 html
     head
+        meta(charset='utf8')
         link(href='config-panel.css' rel='stylesheet')
         link(href='style.css' rel='stylesheet')
         link(href='spots.css' rel='stylesheet')
@@ -29,9 +30,10 @@ html
                         input(id='spotPosition' type='text')
                 .edit-row
                     label
-                        span Position
-                        input(id='spotRoute' type='text')
+                        span Route
+                        select(id='spotRoute')
+                            option(value='') No Route
                 .edit-row
-                    button(id='spotSave') Speichern
+                    button(id='spotReset') Zurücksetzen
 
         script(src='script.js')

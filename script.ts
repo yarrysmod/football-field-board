@@ -1,16 +1,28 @@
+const SPOT_SELECTED_CLASS = 'selected';
+const SPOT_SET_CLASS = 'set';
+
 class FieldSpot {
   private domElement: HTMLDivElement;
 
   set isSelected(value: boolean) {
-    this.domElement.classList.toggle('set', value);
+    this.domElement.classList.toggle(SPOT_SELECTED_CLASS, value);
   }
 
-  get position () {
-    return this.domElement.getAttribute('data-position') || '';
+  get position() {
+    return this.domElement.dataset['position'] || '';
   }
 
-  set position (newPosition) {
-    this.domElement.setAttribute('data-position', newPosition);
+  set position(newPosition) {
+    this.domElement.dataset['position'] = newPosition;
+    this.domElement.classList.toggle(SPOT_SET_CLASS, newPosition !== '');
+  }
+
+  get route() {
+    return this.domElement.dataset['route'] || '';
+  }
+
+  set route(newRoute) {
+    this.domElement.dataset['route'] = newRoute;
   }
 
   constructor(
@@ -53,7 +65,7 @@ class FieldGenerator {
 
     const isSameSpotAsBefore = this._selectedSpot === spot;
 
-    if(isSameSpotAsBefore) {
+    if (isSameSpotAsBefore) {
       this._selectedSpot.isSelected = false;
       this._selectedSpot = undefined;
     } else {
@@ -115,30 +127,148 @@ class FieldGenerator {
   }
 }
 
+const EDIT_MODE_CLASS = 'has-selection';
+
+interface FootballRoute {
+  identifier: string;
+  name: string;
+}
+
+interface RouteCategory {
+  identifier: string;
+  name: string;
+  routes: FootballRoute[];
+}
+
+type genericRoutesList = 'five_o' | 'five_i' | 'go';
+const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
+  five_o: {
+    identifier: 'five_o',
+    name: 'Five out',
+  },
+  five_i: {
+    identifier: 'five_i',
+    name: 'Five In',
+  },
+  go: {
+    identifier: 'go',
+    name: 'Go',
+  },
+};
+
+const routeCategories: RouteCategory[] = [
+  {
+    identifier: 'l_plays',
+    name: 'Routes from the left',
+    routes: [
+      genericRoutes.five_o,
+      genericRoutes.five_i,
+    ]
+  },
+  {
+    identifier: 'c_plays',
+    name: 'Unidirection routes',
+    routes: [
+      genericRoutes.go,
+    ]
+  },
+  {
+    identifier: 'r_plays',
+    name: 'Routes from the right',
+    routes: [
+      genericRoutes.five_o,
+      genericRoutes.five_i,
+    ]
+  },
+];
+
 class SpotConfigurator {
   private selectedSpot: FieldSpot;
   private configPanel: Element;
   private inputs: {
-    route: Element;
-    position: Element;
+    route: HTMLSelectElement;
+    position: HTMLInputElement;
   };
+  private resetButton: HTMLButtonElement;
 
   constructor() {
     this.configPanel = document.querySelector('.config-panel');
     this.inputs = {
       position: this.configPanel.querySelector('input#spotPosition'),
-      route: this.configPanel.querySelector('input#spotRoute'),
+      route: this.configPanel.querySelector('select#spotRoute'),
+    };
+    this.resetButton = this.configPanel.querySelector('button#spotReset');
+
+    this.populateRoutes();
+
+    this.inputs.position.addEventListener('input', () => {
+      this.selectedSpot.position = this.inputs.position.value;
+    });
+
+    this.inputs.route.addEventListener('change', () => {
+      this.selectedSpot.route = this.inputs.route.value;
+    });
+
+    this.resetButton.addEventListener('click', () => {
+      this.inputs.position.value = '';
+      this.inputs.position.dispatchEvent(new Event('input'));
+
+      this.inputs.route.value = '';
+      this.inputs.position.dispatchEvent(new Event('change'));
+    });
+  }
+
+  private populateRoutes() {
+    const routeSelect = this.inputs.route;
+
+    for (const category of routeCategories) {
+      const {
+        name: categoryName,
+        identifier: categoryIdentifier,
+        routes,
+      } = category;
+      const optionGroup = document.createElement('optgroup');
+
+      optionGroup.label = categoryName;
+
+      for (const route of routes) {
+        const {
+          name: routeName,
+          identifier: routeIdentifier,
+        } = route;
+        const option = document.createElement('option');
+
+        option.label = routeName;
+        option.value = `${categoryIdentifier}#${routeIdentifier}`;
+
+        optionGroup.appendChild(option);
+      }
+
+      routeSelect.appendChild(optionGroup);
     }
   }
 
   processSelectedSpot(selectedSpot: FieldSpot) {
-    if (!selectedSpot) {
-      this.selectedSpot = undefined;
+    this.selectedSpot = selectedSpot;
+
+    if (!this.selectedSpot) {
       this.resetConfigurator();
+    } else {
+      this.initializeConfigurator();
     }
   }
 
-  resetConfigurator() {}
+  resetConfigurator() {
+    this.configPanel.classList.remove(EDIT_MODE_CLASS);
+  }
+
+  private initializeConfigurator() {
+    this.inputs.position.value = this.selectedSpot.position;
+    this.inputs.route.value = this.selectedSpot.route;
+    this.configPanel.classList.add(EDIT_MODE_CLASS);
+
+    this.inputs.position.focus();
+  }
 }
 
 

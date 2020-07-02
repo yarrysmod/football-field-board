@@ -21,4 +21,10 @@ $setSpot: #359b56;
     border: $borderWidth solid $setSpot;
     @include center-text(attr(data-position), $fieldGrass);
   }
+
+  &.selected {
+    background: $selectedSpot;
+    border: $borderWidth solid $setSpot;
+    @include center-text(attr(data-position), $fieldGrass);
+  }
 }
