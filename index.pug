@@ -1,0 +1,37 @@
+doctype html
+html
+    head
+        link(href='config-panel.css' rel='stylesheet')
+        link(href='style.css' rel='stylesheet')
+        link(href='spots.css' rel='stylesheet')
+    body
+        .field
+            .field-inner
+                .opposing-team
+                    .endzone
+                    .no-run-zone
+                    .play-zone
+                        .ten-yard
+                .current-team
+                    .play-zone
+                        .ten-yard
+                    .no-run-zone
+                    .endzone
+                .spots-layer
+
+        .config-panel
+            h1 Route Planner
+            .description.no-selection Select a position to assign a role and route.
+            .edit-area.selection
+                .edit-row
+                    label
+                        span Position
+                        input(id='spotPosition' type='text')
+                .edit-row
+                    label
+                        span Position
+                        input(id='spotRoute' type='text')
+                .edit-row
+                    button(id='spotSave') Speichern
+
+        script(src='script.js')

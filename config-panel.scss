@@ -1,0 +1,47 @@
+@import "style";
+
+.config-panel {
+  position: fixed;
+  top: 0;
+  left: $fieldWidth + (2 * $fieldPadding) + 60px;
+
+  &.has-selection {
+    .no-selection {
+      display: none;
+    }
+
+    .selection {
+      display: block;
+    }
+  }
+
+  .edit-row {
+    margin-top: 20px;
+    overflow: auto;
+
+    label {
+      display: block;
+
+      span {
+        display: block;
+        width: 40%;
+        float: left;
+      }
+
+      input, select {
+        display: block;
+        width: 60%;
+        float: left;
+      }
+    }
+
+    button {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  .selection {
+    display: none;
+  }
+}

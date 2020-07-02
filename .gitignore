@@ -1,0 +1,10 @@
+# ide, js related
+.idea
+.sass-cache
+node_modules
+
+# ignore auto generated
+*.html
+*.css
+*.js
+*.map
