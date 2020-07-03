@@ -1,3 +1,6 @@
+import {routeCategories} from "./route-presets";
+import {PlayStorageManager, StoredPlayData, StoredSpots} from "./play-manager";
+
 const SPOT_SELECTED_CLASS = 'selected';
 const SPOT_SET_CLASS = 'set';
 
@@ -54,20 +57,6 @@ class FieldSpot {
   }
 }
 
-type StoredSpots = {
-  [key: number]: {
-    position: string;
-    route: string;
-  }
-};
-
-interface StoredPlayData {
-  playName: string;
-  createdAt: number;
-  updatedAt?: number;
-  spots: StoredSpots;
-}
-
 class SpotRoute extends HTMLCanvasElement { // TODO
   private canvasContext: CanvasRenderingContext2D;
 
@@ -96,7 +85,7 @@ class PlayGenerator {
     resetPlay: HTMLButtonElement;
   };
 
-  private playStoreManager = new PlayStorageManager();
+  private playManager = new PlayStorageManager();
   public playIdentifier: string;
 
   get selectedSpot() {
@@ -162,6 +151,10 @@ class PlayGenerator {
     );
     this.buttons.resetPlay.addEventListener('click', () => this.reloadPlay());
     this.buttons.savePlay.addEventListener('click', () => this.savePlay());
+
+    this.playManager.eventEmitter.addEventListener('loadPlay', ({detail}: CustomEvent<{playData: StoredPlayData, playIdentifier: string}>) => {
+      this.reloadPlay(detail.playIdentifier, detail.playData);
+    })
   }
 
   public populateSpots(
@@ -201,7 +194,7 @@ class PlayGenerator {
     this.spotConfigurator.processSelectedSpot(this.selectedSpot);
   }
 
-  public reloadPlay(playConfiguration?: StoredPlayData, playIdentifier?: string): void {
+  public reloadPlay(playIdentifier?: string, playConfiguration?: StoredPlayData): void {
     if (this.selectedSpot !== undefined) {
       this.selectedSpot.deselect();
     }
@@ -209,7 +202,7 @@ class PlayGenerator {
     const configuredSpots = playConfiguration?.spots || {};
 
     this.playIdentifier = playIdentifier;
-    this.playName = playIdentifier;
+    this.playName = playConfiguration?.playName;
 
     for (const spot of this.spots) {
       spot.reset();
@@ -251,98 +244,16 @@ class PlayGenerator {
       this.playIdentifier = `${playName}+${currentTimestamp}`;
     }
 
-    this.playStoreManager.updatePlayData(
+    this.playManager.updatePlayData(
         this.playIdentifier,
         this.playName,
         spots,
         currentTimestamp
     );
-
-  }
-}
-
-class PlayStorageManager {
-  updatePlayData(
-      playIdentifier: string,
-      playName: string,
-      spots: StoredSpots,
-      currentTimestamp: number
-  ) {
-    let previousPlayData = localStorage.getItem(playIdentifier);
-    let playData: StoredPlayData;
-
-    if (!previousPlayData) {
-      playData = {
-        spots,
-        playName,
-        createdAt: currentTimestamp,
-      };
-    } else {
-      playData = Object.assign({
-        spots,
-        playName,
-        updatedAt: currentTimestamp,
-      }, JSON.parse(previousPlayData));
-    }
-
-    localStorage.setItem(playIdentifier, JSON.stringify(playData));
   }
 }
 
 const EDIT_MODE_CLASS = 'has-selection';
-
-interface FootballRoute {
-  identifier: string;
-  name: string;
-}
-
-interface RouteCategory {
-  identifier: string;
-  name: string;
-  routes: FootballRoute[];
-}
-
-type genericRoutesList = 'five_o' | 'five_i' | 'go';
-const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
-  five_o: {
-    identifier: 'five_o',
-    name: 'Five out',
-  },
-  five_i: {
-    identifier: 'five_i',
-    name: 'Five In',
-  },
-  go: {
-    identifier: 'go',
-    name: 'Go',
-  },
-};
-
-const routeCategories: RouteCategory[] = [
-  {
-    identifier: 'l_plays',
-    name: 'Routes from the left',
-    routes: [
-      genericRoutes.five_o,
-      genericRoutes.five_i,
-    ]
-  },
-  {
-    identifier: 'c_plays',
-    name: 'Unidirection routes',
-    routes: [
-      genericRoutes.go,
-    ]
-  },
-  {
-    identifier: 'r_plays',
-    name: 'Routes from the right',
-    routes: [
-      genericRoutes.five_o,
-      genericRoutes.five_i,
-    ]
-  },
-];
 
 class SpotConfigurator {
   private selectedSpot: FieldSpot;
@@ -429,6 +340,5 @@ class SpotConfigurator {
     this.inputs.position.focus();
   }
 }
-
 
 new PlayGenerator(11);
