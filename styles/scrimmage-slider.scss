@@ -1,0 +1,83 @@
+@import "variables/field_variables";
+
+input[type=range] {
+  -webkit-appearance: slider-vertical;
+  width: $track-width;
+  background: transparent;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: $track-width;
+  height: $track-height;
+  cursor: pointer;
+  animate: 0.2s;
+  background: $track-color;
+  border-radius: $track-radius;
+  border: $track-border-width solid $track-border-color;
+}
+input[type=range]::-webkit-slider-thumb {
+  border: $track-border-width solid $thumb-border-color;
+  height: $thumb-height;
+  width: $thumb-width;
+  border-radius: $thumb-radius;
+  background: $thumb-color;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-right: -#{$thumb-height/3}; // TODO: hacky, maybe change with something else once Chrome fixes vertical slider
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: $track-color;
+}
+input[type=range]::-moz-range-track {
+  width: $track-width;
+  height: $track-height;
+  cursor: pointer;
+  animate: 0.2s;
+  background: $track-color;
+  border-radius: $track-radius;
+  border: $track-border-width solid $track-border-color;
+}
+input[type=range]::-moz-range-thumb {
+  border: $track-border-width solid $thumb-border-color;
+  height: $thumb-height;
+  width: $thumb-width;
+  border-radius: $thumb-radius;
+  background: $thumb-color;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: $track-width;
+  height: $track-height;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: $track-color;
+  border: $track-border-width solid $thumb-border-color;
+  border-radius: $track-radius;
+}
+input[type=range]::-ms-fill-upper {
+  background: $track-color;
+  border: $track-border-width solid $thumb-border-color;
+  border-radius: $track-radius;
+}
+input[type=range]::-ms-thumb {
+  margin-top: 1px;
+  border: $track-border-width solid $thumb-border-color;
+  height: $thumb-height;
+  width: $thumb-width;
+  border-radius: $thumb-radius;
+  background: $thumb-color;
+  cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: $track-color;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: $track-color;
+}

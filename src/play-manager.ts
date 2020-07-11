@@ -1,3 +1,5 @@
+import {LinesData} from "./line-configurator";
+
 export type StoredSpots = {
   [key: number]: {
     position: string;
@@ -10,6 +12,7 @@ export interface StoredPlayData {
   createdAt: number;
   updatedAt?: number;
   spots: StoredSpots;
+  linesData: LinesData;
 }
 
 export const CREATED_PREFIX = 'created at ';
@@ -100,6 +103,7 @@ export class PlayStorageManager {
       playIdentifier: string,
       playName: string,
       spots: StoredSpots,
+      linesData: LinesData,
       currentTimestamp: number
   ) {
     let previousPlayData = localStorage.getItem(playIdentifier);
@@ -110,6 +114,7 @@ export class PlayStorageManager {
       playData = {
         spots,
         playName,
+        linesData,
         createdAt: currentTimestamp,
       };
 
@@ -118,6 +123,7 @@ export class PlayStorageManager {
       playData = Object.assign(JSON.parse(previousPlayData), {
         spots,
         playName,
+        linesData,
         updatedAt: currentTimestamp,
       });
 

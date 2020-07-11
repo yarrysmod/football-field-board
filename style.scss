@@ -1,34 +1,5 @@
-$fieldGrass: #47cf73;
-$selectedSpot: #fffb00;
-$fieldBorder: white;
-
-$factor: 1.5;
-
-$fieldWidth: 250px * $factor;
-$fieldPadding: 30px * $factor;
-$borderWidth: 2px * $factor;
-
-$endzoneHeight: 100px * $factor;
-$playzoneHeight: 200px * $factor;
-$fiveYardHeight: 50px * $factor;
-$tenYardHeight: 100px * $factor;
-$noRunZoneHeight: 50px * $factor;
-$noRunZoneMarkerLength: 5%;
-
-$opposingEndzoneColor: #a71930;
-$teamEndzoneColor: #024;
-
-@mixin center-text ($text, $color: $fieldBorder) {
-  &:before {
-    position: absolute;
-    content: $text;
-    color: $color;
-    font-weight: bold;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
+@import "styles/variables/field_variables";
+@import "styles/variables/helper_functions";
 
 * {
   box-sizing: border-box;
@@ -50,11 +21,86 @@ body {
     border: $borderWidth solid $fieldBorder;
     position: relative;
 
-    .spots-layer {
+    .play-area {
+      position: relative;
+
+      .play-area-lines {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+
+      .five-yard {
+        height: $fiveYardHeight;
+        border-bottom: $borderWidth dashed $fieldBorder;
+      }
+
+      .ten-yard {
+        height: $tenYardHeight;
+        border-bottom: $borderWidth dashed $fieldBorder;
+        position: relative;
+
+        &:before {
+          content: attr(data-indicator);
+
+          position: absolute;
+          font-weight: bold;
+          font-size: 3rem;
+          bottom: -2.5rem;
+          color: $fieldBorder;
+          font-family: serif;
+          transform: rotate(90deg);
+          letter-spacing: 1rem;
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .spots-layer, .lines-layer {
       position: absolute;
       top: 0;
       height: 100%;
       width: 100%;
+    }
+
+    .scrimmage-slider {
+      height: 100%;
+      position: absolute;
+      right: -#{$fieldPadding/2};
+      top: 0;
+    }
+
+    .lines-layer {
+      overflow: hidden;
+
+      &.hide {
+        display: none;
+      }
+
+      .lines-container {
+        position: absolute;
+        width: 100%;
+
+        .line {
+          height: $borderWidth;
+          border-width: $borderWidth;
+          border-style: solid;
+          position: relative;
+
+          &.blitz-line {
+            color: $teamEndzoneColor;
+            margin-bottom: $blitzHeight;
+
+            @include line-name('Blitz', $teamEndzoneColor);
+          }
+
+          &.scrimmage-line {
+            color: $thumb-color;
+
+            @include line-name('Scrimmage', $thumb-color);
+          }
+        }
+      }
     }
 
     .endzone {
@@ -65,16 +111,6 @@ body {
 
     .play-zone {
       height: $playzoneHeight;
-
-      .five-yard {
-        height: $fiveYardHeight;
-        border-bottom: $borderWidth dashed $fieldBorder;
-      }
-
-      .ten-yard {
-        height: $tenYardHeight;
-        border-bottom: $borderWidth dashed $fieldBorder;
-      }
     }
 
     .no-run-zone {

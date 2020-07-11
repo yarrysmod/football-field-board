@@ -1,0 +1,38 @@
+$fieldGrass: #47cf73;
+$selectedSpot: #fffb00;
+$fieldBorder: white;
+
+$factor: 1.25;
+
+$fieldWidth: 300px * $factor;
+$fieldPadding: 30px * $factor;
+$borderWidth: 2px * $factor;
+
+$endzoneHeight: 100px * $factor;
+$playzoneHeight: 150px * $factor;
+$fiveYardHeight: 50px * $factor;
+
+$blitzHeight: 70px * $factor;
+$tenYardHeight: 100px * $factor;
+$noRunZoneHeight: 50px * $factor;
+$noRunZoneMarkerLength: 5%;
+
+$opposingEndzoneColor: #a71930;
+$teamEndzoneColor: #024;
+
+// SCRIMMAGE SLIDER VARIABLES
+$thumb-height: 18px !default;
+$thumb-width: 18px !default;
+$thumb-color: #FFD754 !default;
+
+$thumb-border-width: 2px !default;
+$thumb-radius: 50% !default;
+$thumb-border-color: #E6C520 !default;
+
+$track-width: 8px !default;
+$track-height: 100% !default;
+$track-radius: 5px !default;
+$track-color: #FFEA2B !default;
+
+$track-border-color: #E6C520 !default;
+$track-border-width: 2px !default;

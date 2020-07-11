@@ -1,4 +1,4 @@
-@import "style";
+@import "styles/variables/field_variables";
 
 $resetColor: $opposingEndzoneColor;
 $saveColor: $fieldGrass;
@@ -42,6 +42,11 @@ $saveColor: $fieldGrass;
       display: block;
       width: 60%;
       float: left;
+      margin: 0;
+    }
+
+    input[type='checkbox'] {
+      width: auto;
     }
 
     button {

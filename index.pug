@@ -5,27 +5,47 @@ html
         link(href='config-panel.css' rel='stylesheet')
         link(href='style.css' rel='stylesheet')
         link(href='spots.css' rel='stylesheet')
+        link(href='styles/scrimmage-slider.css' rel='stylesheet')
     body
         .field
             .field-inner
                 .opposing-team
                     .endzone
-                    .no-run-zone
-                    .play-zone
-                        .ten-yard
+                .play-area
+                    .play-area-lines
+                        .ten-yard(data-indicator='10')
+                        .ten-yard(data-indicator='20')
+                        .ten-yard(data-indicator='10')
+                    .opposing-team
+                        .no-run-zone
+                        .play-zone
+                    .current-team
+                        .play-zone
+                        .no-run-zone
                 .current-team
-                    .play-zone
-                        .ten-yard
-                    .no-run-zone
                     .endzone
+
+                input.scrimmage-slider(type="range" orient="vertical" value=22 autocomplete=off)
+                // draws the relevant play lines
+                .lines-layer
+                    .lines-container
+                        .line.blitz-line
+                        .line.scrimmage-line
+
+                // the container for the player positions
                 .spots-layer
 
         .config-panel
             h1 Play Planner
             .edit-area
                 .edit-row.play-title-container
-                    input(id='playName' type='text' placeholder='Name of Play')
-            .description.no-selection Select a position to assign a role and route.
+                    input(id='playName' type='text' placeholder='Name of Play' autocomplete="off")
+                .edit-row
+                    label
+                        span Show Play Lines
+                        input(id='togglePlayLines' type='checkbox' autocomplete="off")
+                .edit-row.no-selection
+                    .description.no-selection Select a position to assign a role and route.
             .edit-area.selection
                 .edit-row
                     label
