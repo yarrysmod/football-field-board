@@ -2,7 +2,10 @@ import {PlayStorageManager, StoredPlayData, StoredSpots} from "./play-manager";
 import {LineConfigurator, LinesData} from "./line-configurator";
 import {FieldSpot, SpotConfigurator} from "./spot-configurator";
 
-class PlayGenerator {
+export class PlayGenerator {
+  public static YARD_SIZE_IN_PX: number; // set in constructor
+  public static FIELD_WIDTH: number; // TODO ?
+
   private playField: Element;
   private playNameInput: HTMLInputElement;
 
@@ -52,7 +55,8 @@ class PlayGenerator {
   }
 
   constructor(
-      spotsCount: number
+      spotsCount: number,
+      fieldLengthYards: number
   ) {
     this.playField = document.querySelector('.spots-layer');
     this.playNameInput = document.querySelector('input#playName');
@@ -67,6 +71,9 @@ class PlayGenerator {
       width: fieldWidth,
       height: fieldHeight,
     } = this.playField.getBoundingClientRect();
+
+    PlayGenerator.FIELD_WIDTH = fieldWidth;
+    PlayGenerator.YARD_SIZE_IN_PX = fieldHeight / fieldLengthYards;
 
     const spotLength = fieldWidth / spotsCount;
     const rowCount = Math.floor(fieldHeight / spotLength);
@@ -189,4 +196,4 @@ class PlayGenerator {
   }
 }
 
-new PlayGenerator(11);
+new PlayGenerator(13, 60);

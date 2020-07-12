@@ -1,9 +1,10 @@
-@mixin center-text ($text, $color: $fieldBorder) {
+@mixin center-text ($text, $color: $fieldBorder, $fontSize: 1rem) {
   &:before {
     position: absolute;
     content: $text;
     color: $color;
     font-weight: bold;
+    font-size: $fontSize;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -19,4 +20,11 @@
     top: -19px;
     font-weight: bold;
   }
+}
+
+@mixin overlay-area () {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
 }

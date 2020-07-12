@@ -5,27 +5,39 @@ $inactiveSpot: rgba(0, 0, 0, 0.05);
 $hoveredSpot: #359b56;
 $setSpot: #359b56;
 
-.spot {
-  border: $borderWidth solid $inactiveSpot;
-  float: left;
-  border-radius: 50%;
-  display: inline-block;
-  position: relative;
-  transition: 100ms;
+.spots-layer {
+  @include overlay-area();
 
-  &:hover {
-    border: $borderWidth solid $hoveredSpot;
+  .spot {
+    border: $borderWidth solid $inactiveSpot;
+    float: left;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    transition: 100ms;
+
+    &:hover {
+      border: $borderWidth solid $hoveredSpot;
+    }
+
+    &.set {
+      background: $fieldBorder;
+      border: $borderWidth solid $setSpot;
+      @include center-text(attr(data-position), $setSpot, 0.75rem);
+    }
+
+    &.selected {
+      background: $selectedSpot;
+      border: $borderWidth solid $setSpot;
+      @include center-text(attr(data-position), $setSpot, 0.75rem);
+    }
   }
 
-  &.set {
-    background: $fieldBorder;
-    border: $borderWidth solid $setSpot;
-    @include center-text(attr(data-position), $fieldGrass);
-  }
-
-  &.selected {
-    background: $selectedSpot;
-    border: $borderWidth solid $setSpot;
-    @include center-text(attr(data-position), $fieldGrass);
+  canvas {
+    position: absolute;
+    pointer-events: none;
+    width: 100%;
+    left: 0;
+    background: transparent;
   }
 }

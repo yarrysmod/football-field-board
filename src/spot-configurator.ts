@@ -1,11 +1,12 @@
-import {routeCategories} from "./route-presets";
+import {FootballRoute, getRouteDetails, getUniqueRouteIdentifier, routeCategories} from "./route-presets";
+import {PlayGenerator} from "./index";
 
 const SPOT_SELECTED_CLASS = 'selected';
 const SPOT_SET_CLASS = 'set';
 
 export class FieldSpot {
   private domElement: HTMLDivElement;
-  private spotRoute: SpotRoute; // TODO
+  private routeDrawer: RouteDrawer;
 
   set isSelected(value: boolean) {
     this.domElement.classList.toggle(SPOT_SELECTED_CLASS, value);
@@ -24,8 +25,17 @@ export class FieldSpot {
     return this.domElement.dataset['route'] || '';
   }
 
-  set route(newRoute) {
-    this.domElement.dataset['route'] = newRoute;
+  set route(uniqueRouteIdentifier) {
+    this.domElement.dataset['route'] = uniqueRouteIdentifier;
+
+    // draw the route here
+    if (uniqueRouteIdentifier) {
+      const routeDetails = getRouteDetails(uniqueRouteIdentifier);
+
+      this.routeDrawer.drawRoute(routeDetails);
+    } else {
+      this.routeDrawer.removeRoute();
+    }
   }
 
   constructor(
@@ -35,6 +45,7 @@ export class FieldSpot {
   ) {
     this.domElement = document.createElement('div');
     this.domElement.classList.add('spot');
+    this.routeDrawer = new RouteDrawer(this.domElement);
 
     parent.appendChild(this.domElement);
 
@@ -56,19 +67,101 @@ export class FieldSpot {
   }
 }
 
-class SpotRoute extends HTMLCanvasElement { // TODO
+class RouteDrawer {
   private canvasContext: CanvasRenderingContext2D;
-
-  constructor() {
-    super();
-
-    this.canvasContext = this.getContext('2d');
+  private canvas: HTMLCanvasElement;
+  private drawStartPosition = {x: 0, y: 0};
+  private strokeProperties = {
+    width: 6,
+    color: '#0074e8'
   }
 
-  drawRoute() {
+  constructor(private parent: HTMLDivElement) {}
+
+  ensureDrawContext () {
+    if (this.canvasContext) {
+      return this.canvasContext;
+    }
+
+    const spotsLayer = this.parent.parentElement;
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.classList.add('route-canvas');
+
+    this.canvasContext = this.canvas.getContext('2d');
+
+    // calculate offset and start position for canvas
+    this.canvas.style.bottom = `${spotsLayer.offsetHeight -  this.parent.offsetTop}px`;
+    this.drawStartPosition = {
+      x: this.parent.offsetLeft,
+      y: this.canvas.height,
+    };
+
+    spotsLayer.appendChild(this.canvas);
+  }
+
+  drawRoute(routeDetails: FootballRoute) {
+    const YARD_SIZE_IN_PX = PlayGenerator.YARD_SIZE_IN_PX;
+
+    this.ensureDrawContext();
+    this.clearRoute();
+
+    const {
+      canvasContext,
+      drawStartPosition: {x, y},
+    } = this;
+    let previousPosition = {x, y};
+
+    canvasContext.beginPath();
+    canvasContext.lineWidth = this.strokeProperties.width;
+    canvasContext.strokeStyle = this.strokeProperties.color;
+
+    canvasContext.moveTo(x, y);
+
+    for (const {moveX, moveY, quadProperties} of routeDetails.moves) {
+      let nextPosition = {
+        x: previousPosition.x,
+        y: previousPosition.y,
+      };
+
+      if (moveX !== undefined) {
+        nextPosition.x += (moveX * YARD_SIZE_IN_PX);
+      }
+
+      if (moveY !== undefined) {
+        nextPosition.y -= (moveY * YARD_SIZE_IN_PX);
+      }
+
+      if (quadProperties) {
+        const controlY = nextPosition.y - (quadProperties.y * YARD_SIZE_IN_PX);
+        const controlX = nextPosition.x - (quadProperties.x * YARD_SIZE_IN_PX);
+
+        canvasContext.quadraticCurveTo(controlX, controlY, nextPosition.x, nextPosition.y);
+      } else {
+        canvasContext.lineTo(nextPosition.x, nextPosition.y);
+      }
+
+      previousPosition = nextPosition;
+    }
+
+    canvasContext.stroke();
+  }
+
+  clearRoute() {
+    const {width, height} = this.canvas.getBoundingClientRect();
+
+    this.canvasContext.clearRect(0, 0, width, height);
   }
 
   removeRoute() {
+    if (this.canvasContext === undefined) {
+      return;
+    }
+
+    this.canvas.remove();
+
+    delete this.canvasContext;
+    delete this.canvas;
   }
 }
 
@@ -128,7 +221,8 @@ export class SpotConfigurator {
         const option = document.createElement('option');
 
         option.label = routeName;
-        option.value = `${categoryIdentifier}#${routeIdentifier}`;
+
+        option.value = getUniqueRouteIdentifier(categoryIdentifier, routeIdentifier);
 
         optionGroup.appendChild(option);
       }
