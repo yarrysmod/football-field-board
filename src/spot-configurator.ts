@@ -71,7 +71,7 @@ class RouteDrawer {
   private canvasContext: CanvasRenderingContext2D;
   private canvas: HTMLCanvasElement;
   private drawStartPosition = {x: 0, y: 0};
-  private strokeProperties = {
+  private defaultStrokeProperties = {
     width: 6,
     color: '#0074e8'
   }
@@ -84,16 +84,19 @@ class RouteDrawer {
     }
 
     const spotsLayer = this.parent.parentElement;
+    const {width, height} = spotsLayer.getBoundingClientRect();
 
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('route-canvas');
+    this.canvas.width = width;
+    this.canvas.height = height;
 
     this.canvasContext = this.canvas.getContext('2d');
 
     // calculate offset and start position for canvas
     this.canvas.style.bottom = `${spotsLayer.offsetHeight -  this.parent.offsetTop}px`;
     this.drawStartPosition = {
-      x: this.parent.offsetLeft,
+      x: this.parent.offsetLeft + (this.parent.offsetWidth / 2),
       y: this.canvas.height,
     };
 
@@ -110,18 +113,20 @@ class RouteDrawer {
       canvasContext,
       drawStartPosition: {x, y},
     } = this;
+    let latestPosition = {x, y};
     let previousPosition = {x, y};
 
     canvasContext.beginPath();
-    canvasContext.lineWidth = this.strokeProperties.width;
-    canvasContext.strokeStyle = this.strokeProperties.color;
+    canvasContext.lineWidth = this.defaultStrokeProperties.width;
+    canvasContext.strokeStyle = this.defaultStrokeProperties.color;
 
     canvasContext.moveTo(x, y);
 
+    // Line
     for (const {moveX, moveY, quadProperties} of routeDetails.moves) {
       let nextPosition = {
-        x: previousPosition.x,
-        y: previousPosition.y,
+        x: latestPosition.x,
+        y: latestPosition.y,
       };
 
       if (moveX !== undefined) {
@@ -137,12 +142,34 @@ class RouteDrawer {
         const controlX = nextPosition.x - (quadProperties.x * YARD_SIZE_IN_PX);
 
         canvasContext.quadraticCurveTo(controlX, controlY, nextPosition.x, nextPosition.y);
+
+        previousPosition = {
+          x: controlX,
+          y: controlY,
+        };
       } else {
         canvasContext.lineTo(nextPosition.x, nextPosition.y);
       }
 
-      previousPosition = nextPosition;
+      previousPosition = latestPosition;
+      latestPosition = nextPosition;
     }
+
+    // Arrow head
+    const arrowAngle = Math.atan2(previousPosition.x - latestPosition.x, previousPosition.y - latestPosition.y) + Math.PI;
+    const arrowWidth = canvasContext.lineWidth * 4;
+
+    canvasContext.moveTo(
+        latestPosition.x - (arrowWidth * Math.sin(arrowAngle - Math.PI / 6)),
+        latestPosition.y - (arrowWidth * Math.cos(arrowAngle - Math.PI / 6))
+    );
+
+    canvasContext.lineTo(latestPosition.x, latestPosition.y);
+
+    canvasContext.lineTo(
+        latestPosition.x - (arrowWidth * Math.sin(arrowAngle + Math.PI / 6)),
+        latestPosition.y - (arrowWidth * Math.cos(arrowAngle + Math.PI / 6))
+    );
 
     canvasContext.stroke();
   }

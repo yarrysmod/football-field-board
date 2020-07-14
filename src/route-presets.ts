@@ -21,7 +21,7 @@ interface RouteCategory {
   routes: FootballRoute[];
 }
 
-type genericRoutesList = 'five_o' | 'five_i' | 'go' | 'wheel';
+type genericRoutesList = 'five_o' | 'five_i' | 'ten_o' | 'ten_i' | 'go' | 'wheel' | 'corner' | 'post' | 'slant' | 'hitch' | 'comeback';
 
 const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
   five_o: {
@@ -52,7 +52,7 @@ const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
     name: 'Wheel Route',
     moves: [
       {
-        moveY: 2,
+        moveY: 3,
         moveX: 1,
         quadProperties: {
           y: 0,
@@ -60,23 +60,86 @@ const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
         }
       },
       {
-        moveY: 2,
-        moveX: 16,
+        moveY: 3,
+        moveX: 18,
         quadProperties: {
-          y: -2,
-          x: 0,
+          y: -4,
+          x: 1,
         }
       },
       {
         moveY: 10,
-        moveX: 1,
-        quadProperties: {
-          y: -2,
-          x: -1,
-        }
       }
     ]
-  }
+  },
+  ten_o: {
+    identifier: 'ten_o',
+    name: 'Ten out',
+    moves: [
+      {moveY: 10},
+      {moveX: -5},
+    ],
+  },
+  ten_i: {
+    identifier: 'ten_i',
+    name: 'Ten In',
+    moves: [
+      {moveY: 10},
+      {moveX: 5},
+    ],
+  },
+  corner: {
+    identifier: 'corner',
+    name: 'Corner',
+    moves: [
+      {moveY: 10},
+      {
+        moveX: 3,
+        moveY: 5,
+      }
+    ]
+  },
+  post: {
+    identifier: 'post',
+    name: 'Post',
+    moves: [
+      {moveY: 10},
+      {
+        moveX: -3,
+        moveY: 5,
+      }
+    ]
+  },
+  slant: {
+    identifier: 'slant',
+    name: 'Slant',
+    moves: [
+      {moveY: 2},
+      {moveX: 10, moveY: 10},
+    ],
+  },
+  comeback: {
+    identifier: 'comeback',
+    name: 'Comeback',
+    moves: [
+      {moveY: 10},
+      {
+        moveY: -2,
+        moveX: -2,
+      }
+    ]
+  },
+  hitch: {
+    identifier: 'hitch',
+    name: 'Hitch',
+    moves: [
+      {moveY: 5},
+      {
+        moveY: -2,
+        moveX: -2,
+      }
+    ]
+  },
 };
 
 const reverseRoute = (route: FootballRoute, doReverseX = false, doReverseY = false) => {
@@ -128,6 +191,16 @@ export const routeCategories: RouteCategory[] = [
       genericRoutes.five_o,
       genericRoutes.five_i,
       genericRoutes.wheel,
+
+      genericRoutes.ten_o,
+      genericRoutes.ten_i,
+
+      genericRoutes.corner,
+      genericRoutes.post,
+      genericRoutes.slant,
+
+      genericRoutes.hitch,
+      genericRoutes.comeback,
     ]
   },
   {
@@ -144,6 +217,16 @@ export const routeCategories: RouteCategory[] = [
       reverseRoute(genericRoutes.five_o, true),
       reverseRoute(genericRoutes.five_i, true),
       reverseRoute(genericRoutes.wheel, true),
+
+      reverseRoute(genericRoutes.ten_i, true),
+      reverseRoute(genericRoutes.ten_o, true),
+
+      reverseRoute(genericRoutes.corner, true),
+      reverseRoute(genericRoutes.post, true),
+      reverseRoute(genericRoutes.slant, true),
+
+      reverseRoute(genericRoutes.hitch, true),
+      reverseRoute(genericRoutes.comeback, true),
     ]
   },
 ];
