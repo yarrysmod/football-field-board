@@ -1,3 +1,5 @@
+![alt app preview](assets/readme_graphic.png)
+
 # how to build
 
 After installing typescript dependency, execute `npm run build` in the CLI.
