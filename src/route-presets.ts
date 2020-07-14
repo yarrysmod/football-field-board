@@ -94,7 +94,7 @@ const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
     moves: [
       {moveY: 10},
       {
-        moveX: 3,
+        moveX: -3,
         moveY: 5,
       }
     ]
@@ -105,7 +105,7 @@ const genericRoutes: { [key in genericRoutesList]: FootballRoute } = {
     moves: [
       {moveY: 10},
       {
-        moveX: -3,
+        moveX: 3,
         moveY: 5,
       }
     ]
