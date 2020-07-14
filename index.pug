@@ -36,7 +36,9 @@ html
                 .spots-layer
 
         .config-panel
-            h1 Play Planner
+            h1
+                img#football-image(src='./assets/football-ball-solid.svg')
+                | Play Planner
             .edit-area
                 .edit-row.play-title-container
                     input(id='playName' type='text' placeholder='Name of Play' autocomplete="off")
@@ -56,6 +58,10 @@ html
                         span Route
                         select(id='spotRoute')
                             option(value='') No Route
+                .edit-row
+                    label
+                        span Route Color
+                        input(id='spotRouteColor' type='color')
                 .edit-row
                     button.full-width.reset(id='spotReset') Reset Spot
             h2 Manage Play

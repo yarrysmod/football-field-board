@@ -4,6 +4,7 @@ export type StoredSpots = {
   [key: number]: {
     position: string;
     route: string;
+    routeColor: string;
   }
 };
 
@@ -89,6 +90,9 @@ export class PlayStorageManager {
     const playContainer = this.playsContainer[playIdentifier];
 
     playContainer.rawData = playData;
+
+    // Update the play name
+    playContainer.domElement.querySelector('span').innerText = playData.playName;
   }
 
   private removePlay(playIdentifier: string) {

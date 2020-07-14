@@ -40,6 +40,10 @@ body {
         border-bottom: $borderWidth dashed $fieldBorder;
         position: relative;
 
+        &:nth-child(odd) {
+          background: rgba(0, 0, 0, 0.2);
+        }
+
         &:before {
           content: attr(data-indicator);
 
@@ -147,4 +151,11 @@ body {
       }
     }
   }
+}
+
+#football-image {
+  display: inline-block;
+  width: 2rem;
+  margin-right: 1rem;
+  vertical-align: middle;
 }

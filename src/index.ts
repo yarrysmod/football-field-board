@@ -156,6 +156,7 @@ export class PlayGenerator {
 
       selectedSpot.position = spotConfiguration.position;
       selectedSpot.route = spotConfiguration.route;
+      selectedSpot.routeColor = spotConfiguration.routeColor;
     }
   }
 
@@ -167,9 +168,9 @@ export class PlayGenerator {
     }
 
     const spots = this.spots
-        .reduce((storedSpots, {route, position}, index): StoredSpots => {
+        .reduce((storedSpots, {route, position, routeColor}, index): StoredSpots => {
           if (position) {
-            storedSpots[index] = {route, position}
+            storedSpots[index] = {route, position, routeColor}
           }
 
           return storedSpots;
