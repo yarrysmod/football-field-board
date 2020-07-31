@@ -8,4 +8,4 @@ node_modules
 *.css
 *.js
 *.map
-!./webpack.config.js
+!_old/webpack.config.js
