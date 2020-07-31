@@ -59,11 +59,7 @@ export class FieldSpot {
     return false;
   }
 
-  constructor(
-      widthPercentage: number,
-      heightPercentage: number,
-      parent: Element
-  ) {
+  constructor(parent: Element) {
     this.domElement = document.createElement('div');
     this.domElement.classList.add('spot');
     this.routeDrawer = new RouteDrawer(this.domElement);

@@ -9,6 +9,20 @@ $saveColor: $fieldGrass;
   left: $fieldWidth + (2 * $fieldPadding);
   padding: $fieldPadding;
   min-width: $fieldWidth + $fieldPadding;
+  background: $configBoardBackground;
+
+  @media (max-width: $mobileBreakpoint) {
+    min-width: auto;
+    width: 100%;
+
+    position: static;
+
+    &.has-selection {
+      position: absolute;
+      left: 0;
+      top: 100%;
+    }
+  }
 
   h1 {
     margin-top: 0;
@@ -80,12 +94,19 @@ $saveColor: $fieldGrass;
   }
 
   .play-title-container {
+    display: flex;
+    border: 1px solid black;
+
     input {
-      font-size: 1.5rem;
+      height: 1.5rem;
       font-weight: bold;
       font-style: italic;
-      margin-bottom: 20px;
-      width: 100%;
+      flex: 1;
+      border: none;
+    }
+
+    button {
+      height: 1.5rem;
     }
   }
 }
@@ -100,4 +121,21 @@ $saveColor: $fieldGrass;
       width: 25%;
     }
   }
+}
+
+.config-panel-title {
+  font-size: 1.5rem;
+
+  #football-image {
+    display: inline-block;
+    height: 1.5rem;
+    width: auto;
+    margin-right: 1rem;
+    vertical-align: middle;
+  }
+}
+
+.button-icon {
+  height: 1rem;
+  width: 1rem;
 }

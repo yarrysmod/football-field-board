@@ -2,11 +2,48 @@ doctype html
 html
     head
         meta(charset='utf8')
+        meta(name="viewport" content="width=device-width, initial-scale=1")
         link(href='styles/config-panel.css' rel='stylesheet')
         link(href='styles/style.css' rel='stylesheet')
         link(href='styles/spots.css' rel='stylesheet')
         link(href='styles/scrimmage-slider.css' rel='stylesheet')
     body
+        .config-panel
+            h1.config-panel-title
+                img#football-image(src='./assets/football-ball-solid.svg')
+                | Play Planner
+            .edit-area
+                .edit-row.play-title-container
+                    input(id='playName' type='text' placeholder='Name of Play' autocomplete="off")
+                    button.reset(id='playReset' title="Reset Play")
+                        img.button-icon(src='./assets/times-solid.svg')
+                    button.save(id='playSave' title="Save Play")
+                        img.button-icon(src='./assets/save-solid.svg')
+                .edit-row
+                    label
+                        span Show Play Lines
+                        input(id='togglePlayLines' type='checkbox' autocomplete="off")
+                .edit-row.no-selection
+                    .description.no-selection Select a position to assign a role and route.
+            .edit-area.selection
+                .edit-row
+                    label
+                        span Position
+                        input(id='spotPosition' type='text')
+                .edit-row
+                    label
+                        span Route
+                        select(id='spotRoute')
+                            option(value='') No Route
+                .edit-row
+                    label
+                        span Route Color
+                        input(id='spotRouteColor' type='color')
+                .edit-row
+                    button.full-width.reset(id='spotReset') Reset Spot
+            h2 Previous Plays
+            .edit-area.plays-wrapper
+
         .field
             .field-inner
                 .opposing-team
@@ -34,42 +71,4 @@ html
 
                 // the container for the player positions
                 .spots-layer
-
-        .config-panel
-            h1
-                img#football-image(src='./assets/football-ball-solid.svg')
-                | Play Planner
-            .edit-area
-                .edit-row.play-title-container
-                    input(id='playName' type='text' placeholder='Name of Play' autocomplete="off")
-                .edit-row
-                    label
-                        span Show Play Lines
-                        input(id='togglePlayLines' type='checkbox' autocomplete="off")
-                .edit-row.no-selection
-                    .description.no-selection Select a position to assign a role and route.
-            .edit-area.selection
-                .edit-row
-                    label
-                        span Position
-                        input(id='spotPosition' type='text')
-                .edit-row
-                    label
-                        span Route
-                        select(id='spotRoute')
-                            option(value='') No Route
-                .edit-row
-                    label
-                        span Route Color
-                        input(id='spotRouteColor' type='color')
-                .edit-row
-                    button.full-width.reset(id='spotReset') Reset Spot
-            h2 Manage Play
-            .edit-area
-                .edit-row
-                    button.half-width.reset(id='playReset') Reset Play
-                    button.half-width.save(id='playSave') Save Play
-            h2 Previous Plays
-            .edit-area.plays-wrapper
-
         script(src='dist/bundle.js')

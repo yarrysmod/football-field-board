@@ -81,7 +81,7 @@ export class PlayGenerator {
     const heightPercentage = 100 / rowCount;
 
     this.defineSpotStyle(widthPercentage, heightPercentage);
-    this.populateSpots(rowCount, spotsCount, {widthPercentage, heightPercentage})
+    this.populateSpots(rowCount, spotsCount);
 
     this.playField.addEventListener(
         'spotSelected',
@@ -95,22 +95,11 @@ export class PlayGenerator {
     })
   }
 
-  public populateSpots(
-      rowCount: number,
-      spotsCount: number,
-      spotDimensions: {
-        widthPercentage: number;
-        heightPercentage: number;
-      }
-  ) {
+  public populateSpots(rowCount: number, spotsCount: number) {
     for (let rowNum = 0; rowNum < rowCount; rowNum += 1) {
       for (let spotNum = 0; spotNum < spotsCount; spotNum += 1) {
         this.spots.push(
-            new FieldSpot(
-                spotDimensions.widthPercentage,
-                spotDimensions.heightPercentage,
-                this.playField
-            )
+            new FieldSpot(this.playField)
         );
       }
     }
