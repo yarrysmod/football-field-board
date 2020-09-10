@@ -3,7 +3,9 @@
     "module": "commonjs",
     "target": "ES2017",
     "noImplicitAny": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "strict": true,
+    "strictFunctionTypes": true
   },
   "exclude": [
     "../node_modules"
